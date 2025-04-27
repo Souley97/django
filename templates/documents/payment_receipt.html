@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reçu de Paiement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .receipt {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+        }
+        .school-info {
+            text-align: center;
+            flex-grow: 1;
+        }
+        .school-name {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .receipt-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 18px;
+            text-decoration: underline;
+        }
+        .receipt-number {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .info-block {
+            margin-bottom: 20px;
+        }
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .label {
+            font-weight: bold;
+            width: 200px;
+        }
+        .value {
+            flex-grow: 1;
+        }
+        .payment-details {
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .payment-type {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .amount {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+            text-align: right;
+        }
+        .footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature {
+            width: 45%;
+        }
+        .signature-title {
+            font-weight: bold;
+            margin-bottom: 50px;
+        }
+        .note {
+            margin-top: 20px;
+            font-size: 12px;
+            font-style: italic;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            {% if school and school.logo %}
+                <img src="{{ school.logo.url }}" alt="Logo" class="logo">
+            {% else %}
+                <div class="logo">LOGO</div>
+            {% endif %}
+            <div class="school-info">
+                <div class="school-name">{{ school.name }}</div>
+                <div>{{ school.type }}</div>
+                <div>Année scolaire : {% now "Y" %} - {% now "Y"|add:"1" %}</div>
+            </div>
+        </div>
+
+        <div class="receipt-title">REÇU DE PAIEMENT</div>
+        
+        <div class="receipt-number">N° {{ payment.receipt_number }}</div>
+        
+        <div class="info-block">
+            <div class="info-title">INFORMATIONS ÉLÈVE</div>
+            <div class="field">
+                <div class="label">Nom et Prénom :</div>
+                <div class="value">{{ student.lastname }} {{ student.firstname }}</div>
+            </div>
+            <div class="field">
+                <div class="label">Classe :</div>
+                <div class="value">{{ student.classe }}</div>
+            </div>
+        </div>
+        
+        <div class="info-block">
+            <div class="info-title">DÉTAILS DU PAIEMENT</div>
+            <div class="field">
+                <div class="label">Date :</div>
+                <div class="value">{{ date }}</div>
+            </div>
+            <div class="field">
+                <div class="label">Type de paiement :</div>
+                <div class="value">{{ payment.get_payment_type_display }}</div>
+            </div>
+            {% if payment.payment_type == 'Mensualité' %}
+                <div class="field">
+                    <div class="label">Mois concerné :</div>
+                    <div class="value">{{ payment.month_of|date:"F Y" }}</div>
+                </div>
+            {% elif payment.payment_type == 'Avance' %}
+                <div class="field">
+                    <div class="label">Période :</div>
+                    <div class="value">{{ payment.month_of|date:"F Y" }} ({{ payment.months_covered }} mois)</div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="payment-details">
+            <div class="payment-type">{{ payment.get_payment_type_display }}</div>
+            {% if payment.notes %}
+                <div>{{ payment.notes }}</div>
+            {% endif %}
+            <div class="amount">Montant payé : {{ payment.amount }} FCFA</div>
+        </div>
+        
+        <div class="footer">
+            <div class="signature">
+                <div class="signature-title">Signature Caissier</div>
+                {% if payment.cashier %}
+                    <div>{{ payment.cashier.get_full_name }}</div>
+                {% endif %}
+            </div>
+            <div class="signature">
+                <div class="signature-title">Signature Parent/Tuteur</div>
+            </div>
+        </div>
+        
+        <div class="note">
+            Ce reçu est un document officiel, merci de le conserver soigneusement pour toute demande ultérieure.
+        </div>
+    </div>
+</body>
+</html> 

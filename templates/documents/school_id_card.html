@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Carte d'Identité Scolaire</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            color: #333;
+            font-size: 12px;
+        }
+        .card {
+            width: 8.5cm;
+            height: 5.4cm;
+            border: 1px solid #000;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+            background-color: #fff;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+        }
+        .school-info {
+            text-align: center;
+            flex-grow: 1;
+        }
+        .school-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .card-title {
+            text-align: center;
+            font-weight: bold;
+            margin: 5px 0;
+            font-size: 11px;
+            text-decoration: underline;
+        }
+        .student-info {
+            display: flex;
+            margin-top: 5px;
+        }
+        .photo {
+            width: 2.5cm;
+            height: 3cm;
+            border: 1px solid #000;
+            margin-right: 10px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8px;
+            text-align: center;
+        }
+        .info {
+            flex-grow: 1;
+        }
+        .field {
+            margin-bottom: 5px;
+            font-size: 10px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 8px;
+            font-style: italic;
+        }
+        .qr-code {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 1cm;
+            height: 1cm;
+            border: 1px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            {% if school and school.logo %}
+                <img src="{{ school.logo.url }}" alt="Logo" class="logo">
+            {% else %}
+                <div class="logo">LOGO</div>
+            {% endif %}
+            <div class="school-info">
+                <div class="school-name">{{ school.name }}</div>
+                <div>{{ school.type }}</div>
+            </div>
+        </div>
+
+        <div class="card-title">CARTE D'IDENTITÉ SCOLAIRE</div>
+
+        <div class="student-info">
+            <div class="photo">
+                {% if student.photo %}
+                    <img src="{{ student.photo.url }}" alt="Photo d'identité" style="max-width: 100%; max-height: 100%;">
+                {% else %}
+                    PHOTO
+                {% endif %}
+            </div>
+            <div class="info">
+                <div class="field">
+                    <span class="label">Nom :</span> {{ student.lastname }}
+                </div>
+                <div class="field">
+                    <span class="label">Prénom :</span> {{ student.firstname }}
+                </div>
+                <div class="field">
+                    <span class="label">Classe :</span> {{ student.classe }}
+                </div>
+                <div class="field">
+                    <span class="label">Date de naissance :</span> {{ student.date_of_birth|date:"d/m/Y" }}
+                </div>
+                <div class="field">
+                    <span class="label">Année scolaire :</span> {% now "Y" %} - {% now "Y"|add:"1" %}
+                </div>
+            </div>
+        </div>
+
+        <div class="qr-code">QR Code</div>
+
+        <div class="footer">
+            {{ school.name }} | Année {{ year }}
+        </div>
+    </div>
+</body>
+</html> 
