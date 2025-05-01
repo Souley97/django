@@ -107,6 +107,9 @@ L'API utilise un système de permissions basé sur les rôles:
 - Conducteurs: mise à jour des informations de trajets
 - Voyageurs: réservation de trajets et gestion de leurs propres réservations
 
+python -m pip install --upgrade pip setuptools wheel
+
+
 ## Technologies Utilisées
 
 - Django 4.x

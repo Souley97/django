@@ -10,6 +10,11 @@ from apps.vehicules.models import Vehicule
 from apps.trajets.models import Trajet
 from apps.reservations.models import Reservation
 from apps.paiements.models import Paiement
+from django.contrib.auth import get_user_model
+
+
+
+User = get_user_model()
 
 # User Serializers
 class UserSerializer(serializers.ModelSerializer):
@@ -111,39 +116,40 @@ class PaiementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paiement
         fields = '__all__'
-
-# Email Token Serializer
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = User.USERNAME_FIELD
-    
+    username_field = 'email'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.fields['email'] = serializers.CharField(required=True)
-        self.fields['password'] = serializers.CharField(required=True, style={'input_type': 'password'})
-        
-        # Supprimer le champ username s'il existe
-        # if 'username' in self.fields:
-        #     del self.fields['username']
-    
+        self.fields['email'] = serializers.EmailField()
+        self.fields['password'] = serializers.CharField(style={'input_type': 'password'})
+
     def validate(self, attrs):
-        # Récupérer l'utilisateur par email
         email = attrs.get('email')
         password = attrs.get('password')
-        
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError({'email': 'Aucun utilisateur trouvé avec cet email.'})
-        
-        # Vérifier mot de passe avec username
-        attrs['password'] = user.password
-        
-        # Supprimer email pour éviter les conflits
-        del attrs['email']
-        
-        # Utiliser la validation de la classe parent
-        return super().validate(attrs) 
+
+        if not user.check_password(password):
+            raise serializers.ValidationError({'password': 'Mot de passe incorrect.'})
+
+        # Assure que le champ 'username' est défini pour la classe parente
+        # Préparer les données pour le parent
+        attrs['username'] = user.username  # ou un identifiant unique
+
+        # Appel au parent pour générer le token
+        data = super().validate(attrs)
+
+        # Ajouter des données personnalisées à la réponse
+        data['role'] = user.role
+        data['nom'] = user.nom
+        data['email'] = user.email
+        return data
+
+       
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True, style={'input_type': 'password'})

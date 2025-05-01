@@ -166,7 +166,13 @@ class UserViewSet(viewsets.ModelViewSet):
 class CompagnieTransportViewSet(viewsets.ModelViewSet):
     queryset = CompagnieTransport.objects.all()
     serializer_class = CompagnieTransportSerializer
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'AGENT':
+            return CompagnieTransport.objects.filter(responsable=user)
+        return CompagnieTransport.objects.all()
     
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, IsAdminUser]
@@ -212,7 +218,16 @@ class AgentCompagnieViewSet(viewsets.ModelViewSet):
 class ConducteurViewSet(viewsets.ModelViewSet):
     queryset = Conducteur.objects.all()
     serializer_class = ConducteurSerializer
-    
+    def get_queryset(self):
+
+        user = self.request.user
+        if  user.role == 'ADMIN':
+
+            return Conducteur.objects.all()   
+        if user.role == 'AGENT' or user.role == 'ADMIN':
+            return Conducteur.objects.filter(compagnie__responsable=user)
+        
+ 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, IsAdminUser | IsCompagnieAgent]
@@ -231,7 +246,17 @@ class ConducteurViewSet(viewsets.ModelViewSet):
 class VehiculeViewSet(viewsets.ModelViewSet):
     queryset = Vehicule.objects.all()
     serializer_class = VehiculeSerializer
-    
+    def get_queryset(self):
+
+        user = self.request.user
+        if  user.role == 'ADMIN':
+
+            return Vehicule.objects.all()   
+        if user.role == 'AGENT' or user.role == 'ADMIN':
+            return Vehicule.objects.filter(compagnie__responsable=user)
+        
+ 
+                 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             permission_classes = [permissions.IsAuthenticated, IsAdminUser | IsCompagnieAgent]

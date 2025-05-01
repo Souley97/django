@@ -31,9 +31,10 @@ router.register(r'paiements', PaiementViewSet)
 
 urlpatterns = [
     # Authentification JWT
+    # path('login/', LoginView.as_view(), name='login'),
     path('login/', LoginAPIView.as_view(), name='login'),
 
-    path('token/', LoginView.as_view(), name='token_obtain_pair'),
+    # path('token/', LoginView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', RegisterAPIView.as_view(), name='register'),
     # API REST

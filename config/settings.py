@@ -189,11 +189,11 @@ SIMPLE_JWT = {
 
 # Configuration CORS
 CORS_ALLOW_ALL_ORIGINS = True  # En développement - À restreindre en production
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # Adresse de votre frontend React
-#     "http://127.0.0.1:3000",
-#     "https://votre-domaine-frontend.com",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Adresse de votre frontend React
+    "http://127.0.0.1:3000",
+    "https://votre-domaine-frontend.com",
+]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     'DELETE',
